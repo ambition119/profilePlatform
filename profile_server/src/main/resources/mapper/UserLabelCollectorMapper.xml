@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.am.profile.platform.dao.UserLabelCollectorMapper" >
+    <resultMap id="BaseResultMap" type="com.am.profile.platform.domain.dao.UserLabelCollector" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="label_collector_name" property="labelCollectorName" jdbcType="VARCHAR" />
+        <result column="label_collector_ids" property="labelCollectorIds" jdbcType="VARCHAR" />
+        <result column="label_collector_owner" property="labelCollectorOwner" jdbcType="VARCHAR" />
+        <result column="label_collector_owner_email" property="labelCollectorOwnerEmail" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <resultMap id="VoResultMap" type="com.am.profile.platform.domain.vo.UserLabelCollectorVo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="label_collector_name" property="labelCollectorName" jdbcType="VARCHAR" />
+        <result column="label_collector_ids" property="labelCollectorIds" jdbcType="VARCHAR" />
+        <result column="label_collector_owner" property="labelCollectorOwner" jdbcType="VARCHAR" />
+        <result column="label_collector_owner_email" property="labelCollectorOwnerEmail" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <insert id="addInfo" useGeneratedKeys="true" keyProperty="id" parameterType="com.am.profile.platform.domain.dao.UserLabelCollector">
+        insert into user_label_collector
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="labelCollectorName != null" >
+                label_collector_name,
+            </if>
+            <if test="labelCollectorIds != null" >
+                label_collector_ids,
+            </if>
+            <if test="labelCollectorOwner != null" >
+                label_collector_owner,
+            </if>
+            <if test="labelCollectorOwnerEmail != null" >
+                label_collector_owner_email,
+            </if>
+            <if test="state != null" >
+                state,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="labelCollectorName != null" >
+            #{labelCollectorName,jdbcType=VARCHAR},
+        </if>
+            <if test="labelCollectorIds != null" >
+                #{labelCollectorIds,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCollectorOwner != null" >
+                #{labelCollectorOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCollectorOwnerEmail != null" >
+                #{labelCollectorOwnerEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                #{state,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateInfoById" parameterType="com.am.profile.platform.domain.dao.UserLabelCollector">
+        update user_label_collector
+        <set >
+            <if test="labelCollectorName != null" >
+                label_collector_name = #{labelCollectorName,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCollectorIds != null" >
+                label_collector_ids = #{labelCollectorIds,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCollectorOwner != null" >
+                label_collector_owner = #{labelCollectorOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCollectorOwnerEmail != null" >
+                label_collector_owner_email = #{labelCollectorOwnerEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                state = #{state,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="getInfoByName" resultMap="VoResultMap" parameterType="map" >
+        select
+        id,
+        label_collector_name,
+        label_collector_ids,
+        label_collector_owner,
+        label_collector_owner_email,
+        state,
+        date_format(update_time,'%Y-%m-%d %H:%i:%s') as update_time
+        from user_label_collector
+        where 1=1
+        and label_collector_name = #{labelCollectorName,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getList" resultMap="VoResultMap" parameterType="map" >
+        select
+            <if test="distinct" >
+                distinct
+            </if>
+            id,
+            label_collector_name,
+            label_collector_ids,
+            label_collector_owner,
+            label_collector_owner_email,
+            state,
+            date_format(update_time,'%Y-%m-%d %H:%i:%s') as update_time
+        from user_label_collector
+        where 1=1
+        <if test="labelCollectorName != null" >
+            and label_collector_name like  "%"#{labelCollectorName,jdbcType=VARCHAR}"%"
+        </if>
+        <if test="state != null">
+            and state = #{state,jdbcType=INTEGER},
+        </if>
+        <if test="orderByClause == null" >
+            order by update_time desc, id desc
+        </if>
+        <if test="orderByClause != null" >
+            order by update_time ${orderByClause}, id ${orderByClause}
+        </if>
+    </select>
+
+</mapper>

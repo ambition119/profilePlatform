@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.am.profile.platform.dao.LabelAndUserMapper" >
+
+    <select id="getUserProfile" resultType="java.lang.String" parameterType="map" >
+        select
+            label_collector_ids
+        from user_label_ids
+        where 1=1
+        and user_id = #{userId,jdbcType=BIGINT}
+    </select>
+
+    <select id="getLabelIds" resultType="java.lang.String" parameterType="map" >
+        select
+            label_collector_ids
+        from user_label_collector
+        where 1=1
+        and id = #{collectorId,jdbcType=BIGINT}
+    </select>
+
+    <select id="getUserIds" resultType="java.lang.String" parameterType="map" >
+        select
+            user_collector_ids
+        from label_user_ids
+        where 1=1
+        and label_id = #{label_id,jdbcType=BIGINT}
+    </select>
+
+
+</mapper>

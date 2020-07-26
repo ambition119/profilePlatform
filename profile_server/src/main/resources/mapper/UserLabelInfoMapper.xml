@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.am.profile.platform.dao.UserLabelInfoMapper" >
+    <resultMap id="BaseResultMap" type="com.am.profile.platform.domain.dao.UserLabelInfo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="label_id" property="labelId" jdbcType="BIGINT" />
+        <result column="label_root_id" property="labelRootId" jdbcType="BIGINT" />
+        <result column="label_parent_id" property="labelParentId" jdbcType="BIGINT" />
+        <result column="label_en_name" property="labelEnName" jdbcType="VARCHAR" />
+        <result column="label_name" property="labelName" jdbcType="VARCHAR" />
+        <result column="label_own_app_num" property="labelOwnAppNum" jdbcType="INTEGER" />
+        <result column="label_version" property="labelVersion" jdbcType="INTEGER" />
+        <result column="label_level" property="labelLevel" jdbcType="VARCHAR" />
+        <result column="label_online_time" property="labelOnlineTime" jdbcType="VARCHAR" />
+        <result column="label_owner" property="labelOwner" jdbcType="VARCHAR" />
+        <result column="label_owner_email" property="labelOwnerEmail" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="label_desc" property="labelDesc" jdbcType="LONGVARCHAR" />
+        <result column="label_work_fun" property="labelWorkFun" jdbcType="LONGVARCHAR" />
+        <result column="label_value_desc" property="labelValueDesc" jdbcType="LONGVARCHAR" />
+        <result column="label_effect" property="labelEffect" jdbcType="LONGVARCHAR" />
+        <result column="label_example" property="labelExample" jdbcType="LONGVARCHAR" />
+    </resultMap>
+
+    <resultMap id="VoResultMap" type="com.am.profile.platform.domain.vo.ListUserLabelInfoVo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="label_id" property="labelId" jdbcType="BIGINT" />
+        <result column="label_root_id" property="labelRootId" jdbcType="BIGINT" />
+        <result column="label_root_name" property="labelRootName" jdbcType="VARCHAR" />
+        <result column="label_parent_id" property="labelParentId" jdbcType="BIGINT" />
+        <result column="label_parent_name" property="labelParentName" jdbcType="VARCHAR" />
+        <result column="label_en_name" property="labelEnName" jdbcType="VARCHAR" />
+        <result column="label_name" property="labelName" jdbcType="VARCHAR" />
+        <result column="label_own_app_num" property="labelOwnAppNum" jdbcType="INTEGER" />
+        <result column="label_version" property="labelVersion" jdbcType="INTEGER" />
+        <result column="label_level" property="labelLevel" jdbcType="VARCHAR" />
+        <result column="label_online_time" property="labelOnlineTime" jdbcType="VARCHAR" />
+        <result column="label_owner" property="labelOwner" jdbcType="VARCHAR" />
+        <result column="label_owner_email" property="labelOwnerEmail" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="label_desc" property="labelDesc" jdbcType="LONGVARCHAR" />
+        <result column="label_work_fun" property="labelWorkFun" jdbcType="LONGVARCHAR" />
+        <result column="label_value_desc" property="labelValueDesc" jdbcType="LONGVARCHAR" />
+        <result column="label_effect" property="labelEffect" jdbcType="LONGVARCHAR" />
+        <result column="label_example" property="labelExample" jdbcType="LONGVARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, label_id, label_root_id, label_parent_id, label_en_name, label_name, label_own_app_num,
+        label_version, label_level, label_online_time, label_owner, label_owner_email, state,
+        create_time, date_format(update_time,'%Y-%m-%d %H:%i:%s') as update_time
+    </sql>
+    <sql id="Blob_Column_List" >
+        label_desc, label_work_fun, label_value_desc, label_effect, label_example
+    </sql>
+
+    <select id="getMaxLabelId" parameterType="map" resultType="java.lang.Long">
+        select max(label_id)
+        from user_label_info
+        where 1=1
+        <if test="labelOwnAppNum != null" >
+            and label_own_app_num = #{labelOwnAppNum,jdbcType=BIGINT}
+        </if>
+        <if test="labelVersion != null" >
+            and label_version = #{labelVersion,jdbcType=INTEGER}
+        </if>
+        <if test="labelLevel != null" >
+            and label_level = #{labelLevel,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+
+    <select id="getInfoByLabelId" resultMap="VoResultMap" parameterType="map" >
+        select
+            id,
+            label_id,
+            label_name,
+            label_level,
+            state
+        from user_label_info
+        where label_id = #{labelId,jdbcType=BIGINT}
+        and label_version = #{labelVersion,jdbcType=INTEGER}
+    </select>
+
+    <select id="getLabelByFirstParentId" resultMap="VoResultMap" parameterType="map" >
+        select
+            t.id,
+            t.label_id,
+            t.label_name,
+            t.label_en_name,
+            t.label_root_id,
+            '' as label_root_name,
+            t.label_parent_id,
+            '' label_parent_name,
+            t.label_own_app_num,
+            t.label_version,
+            t.label_level,
+            t.label_owner,
+            t.state,
+            t.label_online_time,
+            t.update_time
+        from
+        (
+            select
+                id,
+                label_root_id,
+                label_parent_id,
+                label_id,
+                label_en_name,
+                label_name,
+                label_own_app_num,
+                label_version,
+                label_level,
+                label_owner,
+                state,
+                label_desc,
+                label_online_time,
+                date_format(update_time,'%Y-%m-%d %H:%i:%s') as update_time
+            from user_label_info
+            where 1=1
+                and label_parent_id is null
+                <if test="state != 2" >
+                    and state != 2
+                </if>
+                <if test="state == 2" >
+                    and state is not null
+                </if>
+                <if test="labelLevel != null" >
+                    and label_level = #{labelLevel,jdbcType=VARCHAR}
+                </if>
+        )t
+    </select>
+
+    <select id="getLabelByOtherParentId" resultMap="VoResultMap" parameterType="map" >
+        select
+            t1.id,
+            t1.label_id,
+            t1.label_name,
+            t1.label_en_name,
+            t1.label_root_id,
+            t3.label_root_name as label_root_name,
+            t1.label_parent_id,
+            t2.label_parent_name as label_parent_name,
+            t1.label_own_app_num,
+            t1.label_version,
+            t1.label_level,
+            t1.label_owner,
+            t1.state,
+            t1.label_online_time,
+            t1.update_time
+        from
+        (
+            select
+                id,
+                label_root_id,
+                label_parent_id,
+                label_id,
+                label_en_name,
+                label_name,
+                label_own_app_num,
+                label_version,
+                label_level,
+                label_owner,
+                state,
+                label_desc,
+                label_online_time,
+                date_format(update_time,'%Y-%m-%d %H:%i:%s') as update_time
+            from user_label_info
+            where 1=1
+            and label_parent_id = #{labelParentId,jdbcType=BIGINT}
+            <if test="state != 2" >
+                and state != 2
+            </if>
+            <if test="state == 2" >
+                and state is not null
+            </if>
+            <if test="labelLevel != null" >
+                and label_level = #{labelLevel,jdbcType=VARCHAR}
+            </if>
+        )t1
+        left join
+        (
+            select
+                id  as label_parent_id,
+                label_name as label_parent_name
+            from user_label_info
+            where 1=1
+            and id = #{labelParentId,jdbcType=BIGINT}
+        )t2
+        on t1.label_parent_id = t2.label_parent_id
+        left join
+        (
+            select
+                id  as label_root_id,
+                label_name as label_root_name
+            from user_label_info
+        )t3
+        on t1.label_root_id = t3.label_root_id
+        where 1=1
+    </select>
+
+    <select id="getLabelById" resultMap="VoResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from user_label_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <insert id="addInfo" useGeneratedKeys="true" keyProperty="id" parameterType="com.am.profile.platform.domain.dao.UserLabelInfo">
+        insert into user_label_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="labelId != null" >
+                label_id,
+            </if>
+            <if test="labelRootId != null" >
+                label_root_id,
+            </if>
+            <if test="labelParentId != null" >
+                label_parent_id,
+            </if>
+            <if test="labelEnName != null" >
+                label_en_name,
+            </if>
+            <if test="labelName != null" >
+                label_name,
+            </if>
+            <if test="labelOwnAppNum != null" >
+                label_own_app_num,
+            </if>
+            <if test="labelVersion != null" >
+                label_version,
+            </if>
+            <if test="labelLevel != null" >
+                label_level,
+            </if>
+            <if test="labelOnlineTime != null" >
+                label_online_time,
+            </if>
+            <if test="labelOwner != null" >
+                label_owner,
+            </if>
+            <if test="labelOwnerEmail != null" >
+                label_owner_email,
+            </if>
+            <if test="state != null" >
+                state,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="labelDesc != null" >
+                label_desc,
+            </if>
+            <if test="labelWorkFun != null" >
+                label_work_fun,
+            </if>
+            <if test="labelValueDesc != null" >
+                label_value_desc,
+            </if>
+            <if test="labelEffect != null" >
+                label_effect,
+            </if>
+            <if test="labelExample != null" >
+                label_example,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="labelId != null" >
+                #{labelId,jdbcType=BIGINT},
+            </if>
+            <if test="labelRootId != null" >
+                #{labelRootId,jdbcType=BIGINT},
+            </if>
+            <if test="labelParentId != null" >
+                #{labelParentId,jdbcType=BIGINT},
+            </if>
+            <if test="labelEnName != null" >
+                #{labelEnName,jdbcType=VARCHAR},
+            </if>
+            <if test="labelName != null" >
+                #{labelName,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOwnAppNum != null" >
+                #{labelOwnAppNum,jdbcType=INTEGER},
+            </if>
+            <if test="labelVersion != null" >
+                #{labelVersion,jdbcType=INTEGER},
+            </if>
+            <if test="labelLevel != null" >
+                #{labelLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOnlineTime != null" >
+                #{labelOnlineTime,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOwner != null" >
+                #{labelOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOwnerEmail != null" >
+                #{labelOwnerEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                #{state,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="labelDesc != null" >
+                #{labelDesc,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelWorkFun != null" >
+                #{labelWorkFun,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelValueDesc != null" >
+                #{labelValueDesc,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelEffect != null" >
+                #{labelEffect,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelExample != null" >
+                #{labelExample,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateInfoById" parameterType="com.am.profile.platform.domain.dao.UserLabelInfo">
+        update user_label_info
+        <set >
+            <if test="labelId != null" >
+                label_id = #{labelId,jdbcType=BIGINT},
+            </if>
+            <if test="labelRootId != null" >
+                label_root_id = #{labelRootId,jdbcType=BIGINT},
+            </if>
+            <if test="labelParentId != null" >
+                label_parent_id = #{labelParentId,jdbcType=BIGINT},
+            </if>
+            <if test="labelEnName != null" >
+                label_en_name = #{labelEnName,jdbcType=VARCHAR},
+            </if>
+            <if test="labelName != null" >
+                label_name = #{labelName,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOwnAppNum != null" >
+                label_own_app_num = #{labelOwnAppNum,jdbcType=INTEGER},
+            </if>
+            <if test="labelVersion != null" >
+                label_version = #{labelVersion,jdbcType=INTEGER},
+            </if>
+            <if test="labelLevel != null" >
+                label_level = #{labelLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOnlineTime != null" >
+                label_online_time = #{labelOnlineTime,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOwner != null" >
+                label_owner = #{labelOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="labelOwnerEmail != null" >
+                label_owner_email = #{labelOwnerEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                state = #{state,jdbcType=INTEGER},
+            </if>
+            <if test="labelDesc != null" >
+                label_desc = #{labelDesc,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelWorkFun != null" >
+                label_work_fun = #{labelWorkFun,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelValueDesc != null" >
+                label_value_desc = #{labelValueDesc,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelEffect != null" >
+                label_effect = #{labelEffect,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="labelExample != null" >
+                label_example = #{labelExample,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="getLabels" resultMap="VoResultMap" parameterType="map" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        *
+        from
+        (
+            select
+                t1.id,
+                t1.label_id,
+                t1.label_name,
+                t1.label_en_name,
+                t1.label_root_id,
+                t3.label_name as label_root_name,
+                t1.label_parent_id,
+                t2.label_name as label_parent_name,
+                t1.label_own_app_num,
+                t1.label_version,
+                t1.label_desc,
+                t1.label_level,
+                t1.label_owner,
+                t1.state,
+                t1.label_online_time,
+                date_format(t1.update_time,'%Y-%m-%d %H:%i:%s') as update_time
+            from
+                user_label_info t1
+            left join
+                user_label_info t2
+            on t1.label_parent_id = t2.id
+            left join
+                user_label_info t3
+            on t1.label_root_id = t3.id
+        )t
+        where 1=1
+        <if test="labelRootId != null" >
+            and t.label_root_id = #{labelRootId,jdbcType=BIGINT}
+        </if>
+        <if test="labelVersion != null" >
+            and t.label_version = #{labelVersion,jdbcType=INTEGER}
+        </if>
+        <if test="labelLevel != null" >
+            and t.label_level = #{labelLevel,jdbcType=VARCHAR}
+        </if>
+        <if test="labelName != null" >
+            and t.label_name like "%"#{labelName,jdbcType=VARCHAR}"%"
+        </if>
+        <if test="state != null">
+            and t.state = #{state,jdbcType=INTEGER},
+        </if>
+        <if test="orderByClause == null" >
+            order by t.update_time desc, t.id desc
+        </if>
+        <if test="orderByClause != null" >
+            order by t.update_time ${orderByClause}, t.id ${orderByClause}
+        </if>
+    </select>
+
+</mapper>
