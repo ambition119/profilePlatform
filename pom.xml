@@ -25,7 +25,7 @@
         <druid>1.1.10</druid>
         <pagehelper>1.1.1</pagehelper>
         <commons-lang3>3.7</commons-lang3>
-        <fastjson>1.2.47</fastjson>
+        <fastjson>1.2.83</fastjson>
         <swagger.version>2.7.0</swagger.version>
         <logback.version>1.2.3</logback.version>
         <lombok.version>1.18.0</lombok.version>
